@@ -1,0 +1,88 @@
+﻿@page "/Shop";
+@attribute [Authorize(Roles = "Iron Man")]
+@using System.Net.Sockets
+@using BookShop.Client.Data
+@using BookShop.Client.Models
+
+<PageTitle>Index</PageTitle>
+
+<AuthorizeView Roles="Iron Man">
+    <Authorized>
+        <span>authorized as @context.User.Identity.Name</span>
+    </Authorized>
+    <NotAuthorized>
+        <p>not authorized.</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    List<Book> _books = new List<Book>();
+    List<Book> _booksInitial = new List<Book>();
+
+    void RemoveBook(string name) => _books = _books.Where(x => x.name != name).ToList();
+
+    public string serchby = "";
+    public string serchstring = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _books = await BookService.GetAll();
+        _booksInitial = _books;
+    }
+
+    void Sort(ChangeEventArgs e)
+    {
+        _books = e.Value.ToString() switch
+        {
+            "name" => _books.OrderBy(x => x.name).ToList(),
+            "author" => _books.OrderBy(x => x.author).ToList(),
+            "yearPosted" => _books.OrderBy(x => x.yearPosted).ToList(),
+            _ => _books
+        };
+    }
+
+    void Search()
+    {
+        Console.WriteLine($"{serchby} {serchstring}");
+        _books = serchby switch
+        {
+            "name" => _booksInitial.Where(x => x.name.Contains(serchstring)).ToList(),
+            "author" => _booksInitial.Where(x => x.author.Contains(serchstring)).ToList(),
+            "yearPosted" => _booksInitial.Where(x => x.yearPosted.Contains(serchstring)).ToList(),
+            "" => _booksInitial,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+}
+
+<select @onchange="Sort">
+    <option value="name">Имя</option>
+    <option value="author">Автор</option>
+    <option value="yearPosted">Год выпуска</option>
+</select>
+
+<select @bind="@serchby">
+    <option value=""></option>
+    <option value="name">Имя</option>
+    <option value="author">Автор</option>
+    <option value="yearPosted">Год выпуска</option>
+</select>
+<input @bind="serchstring" />
+<button @onclick="Search">поиск</button>
+
+<div class="grid-container">
+    @foreach (Book i in _books)
+    {
+        <div class="grid-item">
+            <div class="card">
+                <img src="book.png" style="width: 100%">
+                <p>@i.author</p>
+                <p>@i.yearPosted</p>
+                <h1>@i.name</h1>
+                <p class="price">3g A-PVP</p>
+                <p><button @onclick="() => RemoveBook(i.name)">Add to Cart</button></p>
+            </div>
+        </div>
+    }
+</div>
