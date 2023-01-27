@@ -10,7 +10,7 @@ namespace BookShop.Client.Data
 {
     public static class BookService
     {
-        private static string apiurl = "http://localhost:8082/api/";
+        private static string apiurl = "api/";
         private static HttpClient client = new HttpClient();
 
         private static string CallApi(string route)
