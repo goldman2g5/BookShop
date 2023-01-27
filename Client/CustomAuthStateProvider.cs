@@ -1,4 +1,5 @@
-﻿using System.Net.Security;
+﻿ using System.Net.Http.Headers;
+ using System.Net.Security;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -7,18 +8,25 @@ namespace BookShop.Client
     public class CustomAuthStateProvider : AuthenticationStateProvider
     {
         private readonly ILocalStorageService _localStorageService;
-        public CustomAuthStateProvider(ILocalStorageService localStorageService)
+        private readonly HttpClient _http;
+
+        public CustomAuthStateProvider(ILocalStorageService localStorageService, HttpClient http)
         {
             _localStorageService = localStorageService;
+            _http = http;
         }
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             string token = await _localStorageService.GetItemAsync<string>("token");
             var identity = new ClaimsIdentity();
+            _http.DefaultRequestHeaders.Authorization = null;
 
             if (!string.IsNullOrEmpty(token))
             {
                 identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+                _http.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token.Replace("\"", ""));
+
             }
 
             

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.Server", "Server\BookShop.Server.csproj", "{6EF76B85-A4F9-4F96-9048-675EEC1A8ED2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.Server", "Server\BookShop.Server.csproj", "{6EF76B85-A4F9-4F96-9048-675EEC1A8ED2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.Client", "Client\BookShop.Client.csproj", "{12A3651A-83AA-48B6-B77E-E9CA3F16BF36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.Client", "Client\BookShop.Client.csproj", "{12A3651A-83AA-48B6-B77E-E9CA3F16BF36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.Shared", "Shared\BookShop.Shared.csproj", "{2738B86A-9D39-4CFA-9826-C7F2D20735DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.Shared", "Shared\BookShop.Shared.csproj", "{2738B86A-9D39-4CFA-9826-C7F2D20735DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
