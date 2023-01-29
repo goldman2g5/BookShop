@@ -4,14 +4,85 @@
 @using BookShop.Client.Data
 @using BookShop.Client.Models
 
+<style>
+    .card {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    max-width: 300px;
+    margin: auto;
+    text-align: center;
+    font-family: arial;
+}
+
+.price {
+    color: grey;
+    font-size: 22px;
+}
+
+.card button {
+    border: none;
+    outline: 0;
+    padding: 12px;
+    color: white;
+    background-color: #000;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+}
+
+    .card button:hover {
+        opacity: 0.7;
+    }
+
+.grid-container {
+    display: grid;
+    column-gap: 50px;
+    gap: 50px;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+}
+</style>
+
+
 <PageTitle>Index</PageTitle>
 
 <AuthorizeView>
     <Authorized>
         <span>authorized as @context.User.Identity.Name</span>
+
+        <select @onchange="Sort">
+            <option value="name">Имя</option>
+            <option value="author">Автор</option>
+            <option value="yearPosted">Год выпуска</option>
+        </select>
+
+        <select @bind="@serchby">
+            <option value=""></option>
+            <option value="name">Имя</option>
+            <option value="author">Автор</option>
+            <option value="yearPosted">Год выпуска</option>
+        </select>
+        <input @bind="serchstring" />
+        <button @onclick="Search">поиск</button>
+
+        <div class="grid-container">
+            @foreach (Book i in _books)
+            {
+                <div class="grid-item">
+                    <div class="card">
+                        <img src="book.png" style="width: 100%">
+                        <p>@i.author</p>
+                        <p>@i.yearPosted</p>
+                        <h1>@i.name</h1>
+                        <p class="price">3g A-PVP</p>
+                        <p><button @onclick="() => RemoveBook(i.name)">Add to Cart</button></p>
+                    </div>
+                </div>
+            }
+        </div>
     </Authorized>
     <NotAuthorized>
-        <p>not authorized.</p>
+        <img src="https://i.gifer.com/origin/51/51f1ea94effbb251598e67e8522e58f5.gif" />
     </NotAuthorized>
 </AuthorizeView>
 
@@ -56,33 +127,4 @@
     }
 }
 
-<select @onchange="Sort">
-    <option value="name">Имя</option>
-    <option value="author">Автор</option>
-    <option value="yearPosted">Год выпуска</option>
-</select>
 
-<select @bind="@serchby">
-    <option value=""></option>
-    <option value="name">Имя</option>
-    <option value="author">Автор</option>
-    <option value="yearPosted">Год выпуска</option>
-</select>
-<input @bind="serchstring" />
-<button @onclick="Search">поиск</button>
-
-<div class="grid-container">
-    @foreach (Book i in _books)
-    {
-        <div class="grid-item">
-            <div class="card">
-                <img src="book.png" style="width: 100%">
-                <p>@i.author</p>
-                <p>@i.yearPosted</p>
-                <h1>@i.name</h1>
-                <p class="price">3g A-PVP</p>
-                <p><button @onclick="() => RemoveBook(i.name)">Add to Cart</button></p>
-            </div>
-        </div>
-    }
-</div>
