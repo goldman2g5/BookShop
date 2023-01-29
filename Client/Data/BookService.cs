@@ -10,7 +10,7 @@ namespace BookShop.Client.Data
 {
     public static class BookService
     {
-        private static string apiurl = "api/";
+        private static string apiurl = "http://localhost:8082/api/";
         private static HttpClient client = new HttpClient();
 
         private static string CallApi(string route)
@@ -21,7 +21,7 @@ namespace BookShop.Client.Data
 
        public static async Task<List<Book>> GetAll()
         {
-            HttpResponseMessage response = await client.GetAsync(apiurl + "Book");
+            HttpResponseMessage response = await client.GetAsync(apiurl + "book");
             return JsonConvert.DeserializeObject<List<Book>>(response.Content.ToString());
             //var result = await client.GetFromJsonAsync<List<Book>>("api/Book");
         }

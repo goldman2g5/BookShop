@@ -1,6 +1,11 @@
+using KebabPiercingApi;
+using KebabPiercingApi.Data;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<KebabPiercingApiContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("KebabPiercingApiContext") ?? throw new InvalidOperationException("Connection string 'KebabPiercingApiContext' not found.")));
 
 // Add services to the container.
 
@@ -31,6 +36,7 @@ app.UseRouting();
 
 app.MapRazorPages();
 app.MapControllers();
+app.MapBookEndpoints();
 app.MapFallbackToFile("index.html");
 
 app.Run();
