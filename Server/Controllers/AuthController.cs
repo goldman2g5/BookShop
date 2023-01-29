@@ -1,10 +1,14 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using BookShop.Client.Data;
 using BookShop.Client.Models;
+using BookShop.Server.Models;
 using BookShop.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace BookShop.Server.Controllers
 {
@@ -12,7 +16,8 @@ namespace BookShop.Server.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        [HttpPost]
+
+        //[HttpPost]
         //public IActionResult Login([FromBody] Person person)
         //{
         //    var user = PersonService.persons.FirstOrDefault(x => x.Email == person.Email && x.Password == person.Password);
@@ -44,12 +49,68 @@ namespace BookShop.Server.Controllers
         //    });
         //}
 
-        [HttpPost]
-        public async Task<ActionResult<string>> Login(UserLoginDto request)
+        public static User user = new() { };
+
+        [HttpPost("register")]
+        public async Task<ActionResult<User>> Register(UserDto request)
         {
-            string token = "eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTUxMiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiVG9ueSBTdGFyayIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6Iklyb24gTWFuIiwiZXhwIjozMTY4NTQwMDAwfQ.IbVQa1lNYYOzwso69xYfsMOHnQfO3VLvVqV2SOXS7sTtyyZ8DEf5jmmwz2FGLJJvZnQKZuieHnmHkg7CGkDbvA";
-            return token;
+            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+            user.Username = request.Username;
+            user.PasswordHash = passwordHash;
+            user.PasswordSalt = passwordSalt;
+            return Ok(user);
         }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login(UserDto request)
+        {
+            if (request.Username != user.Username)
+            {
+                return BadRequest("User not found");
+            }
+
+            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            {
+                return BadRequest("Wrong password");
+            }
+            string token = CreateToken(user);
+
+            return Ok(token);
+
+        }
+
+        private string CreateToken(User user)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super secret key"));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                 claims: claims,
+                 expires: DateTime.Now.AddDays(7),
+                 signingCredentials: creds
+             );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(passwordHash);
+        }
+
 
     }
 }

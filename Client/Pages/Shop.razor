@@ -1,12 +1,12 @@
 ﻿@page "/Shop";
-@attribute [Authorize(Roles = "Iron Man")]
+@*@attribute [Authorize(Roles = "Iron Man")]*@
 @using System.Net.Sockets
 @using BookShop.Client.Data
 @using BookShop.Client.Models
 
 <PageTitle>Index</PageTitle>
 
-<AuthorizeView Roles="Iron Man">
+<AuthorizeView>
     <Authorized>
         <span>authorized as @context.User.Identity.Name</span>
     </Authorized>
