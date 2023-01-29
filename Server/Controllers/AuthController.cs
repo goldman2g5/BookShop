@@ -17,38 +17,6 @@ namespace BookShop.Server.Controllers
     public class AuthController : ControllerBase
     {
 
-        //[HttpPost]
-        //public IActionResult Login([FromBody] Person person)
-        //{
-        //    var user = PersonService.persons.FirstOrDefault(x => x.Email == person.Email && x.Password == person.Password);
-        //    if (user == null)
-        //        return BadRequest(new { message = "Username or password is incorrect" });
-
-        //    var tokenHandler = new JwtSecurityTokenHandler();
-        //    var key = Encoding.ASCII.GetBytes("super secret key");
-        //    var tokenDescriptor = new SecurityTokenDescriptor
-        //    {
-        //        Subject = new ClaimsIdentity(new Claim[]
-        //        {
-        //            new Claim(ClaimTypes.Name, user.Id.ToString())
-        //        }),
-        //        Expires = DateTime.UtcNow.AddDays(7),
-        //        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        //    };
-        //    var token = tokenHandler.CreateToken(tokenDescriptor);
-        //    var tokenString = tokenHandler.WriteToken(token);
-
-        //    // return basic user info (without password) and token to store client side
-        //    return Ok(new
-        //    {
-        //        Id = user.Id,
-        //        Email = user.Email,
-        //        FirstName = user.FirstName,
-        //        LastName = user.LastName,
-        //        Token = tokenString
-        //    });
-        //}
-
         public static User user = new() { };
 
         [HttpPost("register")]

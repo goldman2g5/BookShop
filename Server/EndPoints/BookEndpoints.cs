@@ -1,20 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using KebabPiercingApi.Data;
 using KebabPiercingApi.Models;
-namespace KebabPiercingApi;
+
+namespace BookShop.Server.EndPoints;
 
 public static class BookEndpoints
 {
-    public static void MapBookEndpoints (this IEndpointRouteBuilder routes)
+    public static void MapBookEndpoints(this IEndpointRouteBuilder routes)
     {
-        routes.MapGet("/api/Book", async (KebabPiercingApiContext db) =>
+        routes.MapGet("/api/Book", async (ApiContext db) =>
         {
             return await db.Book.ToListAsync();
         })
         .WithName("GetAllBooks")
         .Produces<List<Book>>(StatusCodes.Status200OK);
 
-        routes.MapGet("/api/Book/{id}", async (int Id, KebabPiercingApiContext db) =>
+        routes.MapGet("/api/Book/{id}", async (int Id, ApiContext db) =>
         {
             return await db.Book.FindAsync(Id)
                 is Book model
@@ -25,7 +26,7 @@ public static class BookEndpoints
         .Produces<Book>(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound);
 
-        routes.MapPut("/api/Book/{id}", async (int Id, Book book, KebabPiercingApiContext db) =>
+        routes.MapPut("/api/Book/{id}", async (int Id, Book book, ApiContext db) =>
         {
             var foundModel = await db.Book.FindAsync(Id);
 
@@ -33,7 +34,7 @@ public static class BookEndpoints
             {
                 return Results.NotFound();
             }
-            
+
             db.Update(book);
 
             await db.SaveChangesAsync();
@@ -44,7 +45,7 @@ public static class BookEndpoints
         .Produces(StatusCodes.Status404NotFound)
         .Produces(StatusCodes.Status204NoContent);
 
-        routes.MapPost("/api/Book/", async (Book book, KebabPiercingApiContext db) =>
+        routes.MapPost("/api/Book/", async (Book book, ApiContext db) =>
         {
             db.Book.Add(book);
             await db.SaveChangesAsync();
@@ -53,7 +54,7 @@ public static class BookEndpoints
         .WithName("CreateBook")
         .Produces<Book>(StatusCodes.Status201Created);
 
-        routes.MapDelete("/api/Book/{id}", async (int Id, KebabPiercingApiContext db) =>
+        routes.MapDelete("/api/Book/{id}", async (int Id, ApiContext db) =>
         {
             if (await db.Book.FindAsync(Id) is Book book)
             {

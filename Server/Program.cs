@@ -1,16 +1,21 @@
-using KebabPiercingApi;
-using KebabPiercingApi.Data;
+﻿using KebabPiercingApi.Data;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using BookShop.Server;
+using BookShop.Server.EndPoints;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<KebabPiercingApiContext>(options =>
+builder.Services.AddDbContext<ApiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("KebabPiercingApiContext") ?? throw new InvalidOperationException("Connection string 'KebabPiercingApiContext' not found.")));
 
 // Add services to the container.
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddSwaggerGen();
 
 
 
@@ -29,6 +34,12 @@ else
     app.UseHsts();
 }
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+};
+
 app.UseHttpsRedirection();
 
 app.UseBlazorFrameworkFiles();
@@ -41,5 +52,7 @@ app.MapRazorPages();
 app.MapControllers();
 app.MapBookEndpoints();
 app.MapFallbackToFile("index.html");
+
+app.MapUserEndpoints();
 
 app.Run();
