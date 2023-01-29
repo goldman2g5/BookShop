@@ -26,5 +26,6 @@
         var token = await result.Content.ReadAsStringAsync();
         await LocalStorage.SetItemAsync("token", token);
         await AuthStateProvider.GetAuthenticationStateAsync();
+        NavigationManager.NavigateTo("/Shop");
     }
 }

@@ -1,5 +1,5 @@
-﻿ using System.Net.Http.Headers;
- using System.Net.Security;
+﻿using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -29,7 +29,7 @@ namespace BookShop.Client
 
             }
 
-            
+
             var user = new ClaimsPrincipal(identity);
             var state = new AuthenticationState(user);
 
