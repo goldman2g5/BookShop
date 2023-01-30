@@ -116,9 +116,43 @@
 
     protected override async Task OnInitializedAsync()
     {
+     //   List<Book> Books = new List<Book>()
+     //{
+     //   new Book("The Lord of the Rings", "J.R.R. Tolkien", "1954",  "Fantasy"),
+     //   new Book("Harry Potter and the Philosopher's Stone", "J.K. Rowling", "1997", "Fantasy,Novel"),
+     //   new Book("The Hobbit", "J.R.R. Tolkien", "1937", "Fantasy,Novel"),
+     //   new Book("The Hitchhiker's Guide to the Galaxy", "Douglas Adams", "1979" , "Comedy,Science fiction"),
+     //   new Book("The Lion, the Witch and the Wardrobe", "C.S. Lewis", "1950",  "Fantasy,Novel"),
+     //   new Book("The Da Vinci Code", "Dan Brown", "2003", "Thriller,Mystery"),
+     //   new Book("The Little Prince", "Antoine de Saint-Exupéry", "1943", "Fantasy,Fable"),
+     //   new Book("The Alchemist", "Paulo Coelho", "1988",  "Fantasy,Novel"),
+     //   new Book("The Catcher in the Rye", "J.D. Salinger", "1951",  "Novel"),
+     //   new Book("The Kite Runner", "Khaled Hosseini", "2003", "Novel"),
+     //    new Book("Sherlock Holmes", "Arthur Conan Doyle", "1892", "Detective,Novel"),
+     //    new Book("The Adventures of Tom Sawyer", "Mark Twain", "1876", "Novel"),
+     //    new Book("1984", "George Orwell", "1949", "Dystopian"),
+     //    new Book("The Hitchhiker's Guide to the Galaxy", "Douglas Adams", "1979" , "Comedy,Science fiction"),
+     //    new Book("Brave New World", "Aldous Huxley", "1932", "Dystopian"),
+     //    new Book("Fahrenheit 451", "Ray Bradbury", "1953", "Dystopian"),
+     //    new Book("The Handmaid's Tale", "Margaret Atwood", "1985", "Dystopian"),
+     //    new Book("The Hunger Games", "Suzanne Collins", "2008", "Dystopian"),
+     //    new Book("The Time Machine", "H.G. Wells", "1895", "Science fiction"),
+     //    new Book("The War of the Worlds", "H.G. Wells", "1898", "Science fiction"),
+     //    new Book("Sherlock Holmes", "Arthur Conan Doyle", "1892", "Detective,Novel"),
+     //    new Book("The Adventures of Tom Sawyer", "Mark Twain", "1876", "Novel"),
+     //    new Book("The Time Machine", "H.G. Wells", "1895", "Science fiction"),
+     //    new Book("The War of the Worlds", "H.G. Wells", "1898", "Science fiction"),
+     //};
+
+     //   foreach (Book book in Books)
+     //   {
+     //       await BookService.Add(book);
+     //   }
+        
         _books = await BookService.GetAll();
         _booksInitial = _books;
         tags = _books.SelectMany(x => x.Tags.Split(",")).Distinct().ToList();
+
     }
 
     void Sort(string by)

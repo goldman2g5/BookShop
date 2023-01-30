@@ -12,9 +12,8 @@
 
         public string Tags { get; set; } = null!;
 
-        public Book(int id, string author, string name, string yearPosted, string tags)
+        public Book( string name, string author, string yearPosted, string tags)
         {
-            Id = id;
             Author = author;
             Name = name;
             YearPosted = yearPosted;

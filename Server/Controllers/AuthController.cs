@@ -24,10 +24,13 @@ namespace BookShop.Server.Controllers
         public async Task<ActionResult<User>> Register(UserDto request)
         {
 
+            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+
             User user = new User
             {
                 Username = request.Username,
-                Password = request.Password
+                PasswordHash = passwordHash,
+                PasswordSalt = passwordSalt
             };
             await UserService.Add(user);
             return Ok(user);
@@ -42,11 +45,13 @@ namespace BookShop.Server.Controllers
                 return BadRequest("User not found");
             }
             User user = users.Find(u => u.Username == request.Username);
-            if (user.Password != request.Password)
+            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
             {
                 return BadRequest("Wrong password");
             }
             string token = CreateToken(user);
+            Console.WriteLine(token);
+
             return Ok(token);
         }
 
@@ -66,6 +71,20 @@ namespace BookShop.Server.Controllers
              );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512();
+            passwordSalt = hmac.Key;
+            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+        }
+
+        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using var hmac = new HMACSHA512(passwordSalt);
+            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
+            return computedHash.SequenceEqual(passwordHash);
         }
 
 
