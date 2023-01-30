@@ -22,14 +22,10 @@ namespace BookShop.Server.Data
             string json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<User>(json);
         }
-
-        public static async Task<User> Add(User user)
+        
+        public static async Task Add(User user)
         {
-            string json = JsonConvert.SerializeObject(user);
-            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
-            HttpResponseMessage response = await client.PostAsync("https://localhost:7093/api/User", content);
-            json = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<User>(json);
+            await client.PostAsJsonAsync("https://localhost:7093/api/User", user);
         }
 
     }

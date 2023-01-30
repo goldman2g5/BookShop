@@ -25,7 +25,7 @@ namespace BookShop.Client
             {
                 identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
                 _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token.Replace("\"", ""));
+                    new AuthenticationHeaderValue("Bearer", token);
 
             }
 
