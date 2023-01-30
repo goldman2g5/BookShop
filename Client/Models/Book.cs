@@ -2,15 +2,23 @@
 {
     public class Book
     {
-        public string author { get; set; }
-        public string name { get; set; }
-        public string yearPosted { get; set; }
+        public int Id { get; set; }
 
-        public Book(string author, string name, string yearPosted)
+        public string Author { get; set; } = null!;
+
+        public string Name { get; set; } = null!;
+
+        public string YearPosted { get; set; } = null!;
+
+        public string Tags { get; set; } = null!;
+
+        public Book(int id, string author, string name, string yearPosted, string tags)
         {
-            this.author = author;
-            this.name = name;
-            this.yearPosted = yearPosted;
+            Id = id;
+            Author = author;
+            Name = name;
+            YearPosted = yearPosted;
+            Tags = tags;
         }
     }
 }

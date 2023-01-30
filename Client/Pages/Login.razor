@@ -1,9 +1,12 @@
 ﻿@page "/login";
 @using System.Net
+
+@using Newtonsoft.Json
 @inject HttpClient client
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NavigationManager NavigationManager
 @inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+@inject IJSRuntime JSRuntime
 
 <h3>Login</h3>
 
@@ -21,6 +24,8 @@
 
     async Task HandleLogin()
     {
+
+        
         var result= await client.PostAsJsonAsync("api/auth/login", user);
         var token = await result.Content.ReadAsStringAsync();
         await LocalStorage.SetItemAsync("token", token);

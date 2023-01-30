@@ -12,4 +12,6 @@ public partial class Book
     public string Name { get; set; } = null!;
 
     public string YearPosted { get; set; } = null!;
+
+    public string Tags { get; set; } = null!;
 }

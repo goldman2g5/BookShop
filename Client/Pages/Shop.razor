@@ -48,38 +48,55 @@
 
 <AuthorizeView>
     <Authorized>
-        <span>authorized as @context.User.Identity.Name</span>
+        <MudGrid Spacing="5" Justify="Justify.FlexStart">
+            <MudItem>
+                <MudSelect T="string" ValueChanged="value => Sort(value)" Label="Order by" AnchorOrigin="Origin.BottomCenter">
+                    <MudSelectItem Value="@("All")" />
+                    <MudSelectItem Value="@("By Name")"/>
+                    <MudSelectItem Value="@("By Author")"/>
+                    <MudSelectItem Value="@("By year posted")"/>
+                    <MudSelectItem Value="@("By Tag")"/>
+                </MudSelect>
+            </MudItem>
+            @if (Orderby == "By Tag")
+            {
+                <MudItem>
+                    <MudSelect T="string" Label="Order by" AnchorOrigin="Origin.BottomCenter" ValueChanged="value => SortByTag(value)">
+                        @foreach (string tag in @tags)
+                        {
+                            <MudSelectItem Value="@tag"/>
+                        }
+                    </MudSelect>
+                </MudItem>
+            }
+            <MudItem>
+                <MudTextField @bind-Value="serchstring" @onkeydown="Search" Label="Search" Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
 
-        <select @onchange="Sort">
-            <option value="name">Имя</option>
-            <option value="author">Автор</option>
-            <option value="yearPosted">Год выпуска</option>
-        </select>
-
-        <select @bind="@serchby">
-            <option value=""></option>
-            <option value="name">Имя</option>
-            <option value="author">Автор</option>
-            <option value="yearPosted">Год выпуска</option>
-        </select>
-        <input @bind="serchstring" />
-        <button @onclick="Search">поиск</button>
-
-        <div class="grid-container">
+        <MudGrid Spacing="5" Justify="Justify.Center">
             @foreach (Book i in _books)
             {
-                <div class="grid-item">
-                    <div class="card">
-                        <img src="book.png" style="width: 100%">
-                        <p>@i.author</p>
-                        <p>@i.yearPosted</p>
-                        <h1>@i.name</h1>
-                        <p class="price">3g A-PVP</p>
-                        <p><button @onclick="() => RemoveBook(i.name)">Add to Cart</button></p>
-                    </div>
-                </div>
+                <MudItem>
+                    <MudCard>
+                        <MudCardMedia Image="book.png" Height="200"/>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h5">@i.Name</MudText>
+                            <MudText Typo="Typo.body2">@i.Author @i.YearPosted</MudText>
+                            <MudText Typo="Typo.body2">Описание</MudText>
+                            @foreach (string tag in i.Tags.Split(","))
+                            {
+                                <MudChip Color="Color.Primary" @onclick="() => SortByTag(tag)">@tag</MudChip>
+                            }
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" @onclick="() => RemoveBook(i.Name)">Buy</MudButton>
+                            <MudButton Variant="Variant.Text" Color="Color.Primary">Details</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
             }
-        </div>
+        </MudGrid>
     </Authorized>
     <NotAuthorized>
         <img src="https://i.gifer.com/origin/51/51f1ea94effbb251598e67e8522e58f5.gif" />
@@ -90,40 +107,47 @@
 {
     List<Book> _books = new List<Book>();
     List<Book> _booksInitial = new List<Book>();
+    List<string> tags = new List<string>();
+    string Orderby = string.Empty;
 
-    void RemoveBook(string name) => _books = _books.Where(x => x.name != name).ToList();
+    void RemoveBook(string name) => _books = _books.Where(x => x.Name != name).ToList();
 
-    public string serchby = "";
     public string serchstring = "";
 
     protected override async Task OnInitializedAsync()
     {
         _books = await BookService.GetAll();
         _booksInitial = _books;
+        tags = _books.SelectMany(x => x.Tags.Split(",")).Distinct().ToList();
     }
 
-    void Sort(ChangeEventArgs e)
+    void Sort(string by)
     {
-        _books = e.Value.ToString() switch
+        Orderby = by;
+        _books = by switch
         {
-            "name" => _books.OrderBy(x => x.name).ToList(),
-            "author" => _books.OrderBy(x => x.author).ToList(),
-            "yearPosted" => _books.OrderBy(x => x.yearPosted).ToList(),
+            "By Name" => _books.OrderBy(x => x.Name).ToList(),
+            "By Author" => _books.OrderBy(x => x.Author).ToList(),
+            "By year posted" => _books.OrderBy(x => x.YearPosted).ToList(),
+            "All" => _booksInitial,
             _ => _books
         };
+        StateHasChanged();
+    }
+
+    void SortByTag(string tag)
+    {
+        _books = _booksInitial.Where(x => x.Tags.Contains(tag)).ToList();
+        StateHasChanged();
     }
 
     void Search()
     {
-        Console.WriteLine($"{serchby} {serchstring}");
-        _books = serchby switch
-        {
-            "name" => _booksInitial.Where(x => x.name.Contains(serchstring)).ToList(),
-            "author" => _booksInitial.Where(x => x.author.Contains(serchstring)).ToList(),
-            "yearPosted" => _booksInitial.Where(x => x.yearPosted.Contains(serchstring)).ToList(),
-            "" => _booksInitial,
-            _ => throw new ArgumentOutOfRangeException()
-        };
+        _books = _booksInitial.Where(x => x.Name.ToLower().Contains(serchstring.ToLower()) ||
+                                              x.Author.ToLower().Contains(serchstring.ToLower()) ||
+                                              x.YearPosted.ToLower().Contains(serchstring.ToLower()) ||
+                                              x.Tags.ToLower().Contains(serchstring.ToLower())).ToList();
+        StateHasChanged();
     }
 }
 

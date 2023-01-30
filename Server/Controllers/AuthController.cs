@@ -10,6 +10,7 @@ using BookShop.Shared;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 
 namespace BookShop.Server.Controllers
 {
@@ -17,18 +18,16 @@ namespace BookShop.Server.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-
+       
 
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
-            CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
             User user = new User
             {
                 Username = request.Username,
-                PasswordHash = passwordHash,
-                PasswordSalt = passwordSalt
+                Password = request.Password
             };
             await UserService.Add(user);
             return Ok(user);
@@ -43,15 +42,12 @@ namespace BookShop.Server.Controllers
                 return BadRequest("User not found");
             }
             User user = users.Find(u => u.Username == request.Username);
-            if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+            if (user.Password != request.Password)
             {
                 return BadRequest("Wrong password");
             }
             string token = CreateToken(user);
-            Console.WriteLine(token);
-
             return Ok(token);
-
         }
 
         private string CreateToken(User user)
@@ -70,20 +66,6 @@ namespace BookShop.Server.Controllers
              );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-        {
-            using var hmac = new HMACSHA512();
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-        }
-
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-        {
-            using var hmac = new HMACSHA512(passwordSalt);
-            var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return computedHash.SequenceEqual(passwordHash);
         }
 
 
